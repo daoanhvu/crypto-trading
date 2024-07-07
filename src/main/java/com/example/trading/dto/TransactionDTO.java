@@ -1,28 +1,18 @@
-package com.example.trading.domain.entity;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+package com.example.trading.dto;
 
 import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "tradings")
-public class TransactionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class TransactionDTO {
     private Long id;
     private String fromUser;
     private String toUser;
-    // Amount in USDT
     private double amount;
+
     private OffsetDateTime transactionTime;
 
-    public TransactionEntity() { }
+    public TransactionDTO() { }
 
-    public TransactionEntity(Long id, String fromUser, String toUser, double amount, OffsetDateTime transTime) {
+    public TransactionDTO(Long id, String fromUser, String toUser, double amount, OffsetDateTime transTime) {
         this.id = id;
         this.fromUser = fromUser;
         this.toUser = toUser;

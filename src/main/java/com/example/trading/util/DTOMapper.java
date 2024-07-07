@@ -1,9 +1,11 @@
 package com.example.trading.util;
 
 import com.example.trading.domain.entity.PriceEntity;
+import com.example.trading.domain.entity.TransactionEntity;
 import com.example.trading.dto.BinancePriceDTO;
 import com.example.trading.dto.HuobiPriceDTO;
 import com.example.trading.dto.PriceDTO;
+import com.example.trading.dto.TransactionDTO;
 import org.springframework.lang.NonNull;
 
 public final class DTOMapper {
@@ -42,5 +44,14 @@ public final class DTOMapper {
                 dto.getBidQty(),
                 dto.getAskPrice(),
                 dto.getAskQty());
+    }
+
+    public static TransactionDTO toTransactionDTO(@NonNull TransactionEntity entity) {
+        return new TransactionDTO(
+                entity.getId(),
+                entity.getFromUser(),
+                entity.getToUser(),
+                entity.getAmount(),
+                entity.getTransactionTime());
     }
 }

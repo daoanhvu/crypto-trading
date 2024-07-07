@@ -6,6 +6,7 @@ import com.example.trading.dto.HuobiPriceDTO;
 import com.example.trading.dto.HuobiPriceResponseDTO;
 import com.example.trading.dto.PriceDTO;
 import com.example.trading.util.DTOMapper;
+import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -44,6 +45,11 @@ public class PriceFetchingScheduler {
         this.huobiUrl = huobiUrl;
         this.restTemplate = restTemplate;
         this.priceRepository = priceRepository;
+    }
+
+    @PreDestroy
+    public void cleanup() {
+        fixedExecutor.shutdown();
     }
 
     @Scheduled(fixedRateString = "${priceFetching.timeRateInMs}")
