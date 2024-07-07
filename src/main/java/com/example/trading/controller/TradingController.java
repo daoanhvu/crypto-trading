@@ -4,6 +4,7 @@ import com.example.trading.dto.ApiResponse;
 import com.example.trading.dto.PageableResponse;
 import com.example.trading.dto.PriceDTO;
 import com.example.trading.dto.TransactionDTO;
+import com.example.trading.dto.WalletDTO;
 import com.example.trading.service.TradingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +26,14 @@ public class TradingController {
 
     @RequestMapping(path = "/prices/{symbol}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPriceBySymbol(@PathVariable("symbol") String symbol) {
-        PriceDTO theBest = tradingService.retrieveBestPrice(symbol);
-        if (theBest != null) {
-            return new ResponseEntity<>(theBest, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        ApiResponse<PriceDTO> response = tradingService.retrieveBestPrice(symbol);
+        return new ResponseEntity<>(null, HttpStatus.valueOf(response.getHttpStatusCode()));
+    }
+
+    @RequestMapping(path = "/wallets/{username}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> retrieveWallet(@PathVariable("username") String username) {
+        ApiResponse<WalletDTO> response = tradingService.retrieveWallet(username);
+        return new ResponseEntity<>(null, HttpStatus.valueOf(response.getHttpStatusCode()));
     }
 
     @RequestMapping(path = "/transactions", method = RequestMethod.POST,

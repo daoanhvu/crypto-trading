@@ -9,6 +9,7 @@ import com.example.trading.dto.ApiResponse;
 import com.example.trading.dto.PageableResponse;
 import com.example.trading.dto.PriceDTO;
 import com.example.trading.dto.TransactionDTO;
+import com.example.trading.dto.WalletDTO;
 import com.example.trading.service.TradingService;
 import com.example.trading.util.DTOMapper;
 import jakarta.annotation.PostConstruct;
@@ -54,8 +55,11 @@ public class TradingServiceImpl implements TradingService {
     }
 
     @Override
-    public PriceDTO retrieveBestPrice(String symbol) {
-        return priceRepository.findById(symbol).map(DTOMapper::toPriceEntity).orElse(null);
+    public ApiResponse<PriceDTO> retrieveBestPrice(String symbol) {
+        return priceRepository
+                .findById(symbol)
+                .map(price -> new ApiResponse<>(null, 200, DTOMapper.toPriceDTO(price)))
+                .orElseGet(() -> new ApiResponse<>("Price for " + symbol + " not found.", 404, null));
     }
 
     @Override
@@ -115,6 +119,21 @@ public class TradingServiceImpl implements TradingService {
         response.setPage(pageable.getPageNumber());
         response.setSize(pageable.getPageSize());
         response.setContent(pageResult.getContent());
+        return response;
+    }
+
+    @Override
+    public ApiResponse<WalletDTO> retrieveWallet(String username) {
+        ApiResponse<WalletDTO> response = new ApiResponse<>();
+        Optional<UserAccountEntity> senderOpt = userAccountRepository.findById(username);
+        if (senderOpt.isEmpty()) {
+            response.setHttpStatusCode(404);
+            response.setMessage("User info not found.");
+            return response;
+        }
+
+        response.setHttpStatusCode(200);
+        response.setResult(DTOMapper.toWalletDTO(senderOpt.get()));
         return response;
     }
 }

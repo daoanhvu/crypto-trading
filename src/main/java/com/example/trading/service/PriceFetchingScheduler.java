@@ -90,7 +90,7 @@ public class PriceFetchingScheduler {
 
                 List<PriceDTO> binanceList = binanceTask.get();
                 List<PriceDTO> huobiList = huobiTask.get();
-                aggregatePrices(binanceList, huobiList);
+//                aggregatePrices(binanceList, huobiList);
 
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -127,6 +127,6 @@ public class PriceFetchingScheduler {
             bestPrices.addAll(binanceList);
         }
 
-        priceRepository.saveAllAndFlush(bestPrices.stream().map(DTOMapper::toPriceEntity).collect(Collectors.toList()));
+        priceRepository.saveAllAndFlush(bestPrices.stream().map(DTOMapper::toPriceDTO).collect(Collectors.toList()));
     }
 }
