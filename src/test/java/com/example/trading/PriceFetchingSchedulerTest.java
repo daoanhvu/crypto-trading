@@ -29,6 +29,7 @@ class PriceFetchingSchedulerTest {
 		PriceFetchingScheduler scheduler = new PriceFetchingScheduler(restTemplate, "http://fake.binanceUrl",
 				"http://fake.huobi.url", priceRepository);
 
+		// Given
 		PriceDTO priceDTO1 = new PriceDTO("ETHUSDT", 1.0, 5, 1.5, 3);
 		PriceDTO priceDTO2 = new PriceDTO("BTCUSDT", 0.5, 10, 0.7, 5);
 		List<PriceDTO> binanceList = new ArrayList<>();
@@ -41,9 +42,12 @@ class PriceFetchingSchedulerTest {
 		huobiList.add(priceDTO3);
 		huobiList.add(priceDTO4);
 
+		// When
 		Method method = scheduler.getClass().getDeclaredMethod("aggregatePrices", List.class, List.class);
 		method.setAccessible(true);
 		List<PriceDTO> bestPrices = (List<PriceDTO>) method.invoke(scheduler, new Object[] {binanceList, huobiList});
+
+		// Then
 		Assertions.assertNotNull(bestPrices);
 		Assertions.assertEquals(2, bestPrices.size());
 		double bidPriceETHUSDT = bestPrices.stream()

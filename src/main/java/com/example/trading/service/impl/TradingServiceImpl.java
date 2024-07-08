@@ -13,6 +13,8 @@ import com.example.trading.dto.WalletDTO;
 import com.example.trading.service.TradingService;
 import com.example.trading.util.DTOMapper;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import java.util.Optional;
 
 @Service
 public class TradingServiceImpl implements TradingService {
+    private final Logger LOG = LoggerFactory.getLogger(TradingServiceImpl.class);
 
     private final PriceRepository priceRepository;
     private final UserAccountRepository userAccountRepository;
@@ -73,7 +76,7 @@ public class TradingServiceImpl implements TradingService {
             return response;
         }
 
-        Optional<UserAccountEntity> receiverOpt = userAccountRepository.findById(trans.getFromUser());
+        Optional<UserAccountEntity> receiverOpt = userAccountRepository.findById(trans.getToUser());
         if (receiverOpt.isEmpty()) {
             response.setHttpStatusCode(404);
             response.setMessage("Receiver info not found.");
@@ -98,12 +101,14 @@ public class TradingServiceImpl implements TradingService {
             );
             sender.setBalance(sender.getBalance() - trans.getAmount());
             receiver.setBalance(receiver.getBalance() + trans.getAmount());
-            TransactionEntity savedTrans = transactionRepository.save(transactionEntity);
             userAccountRepository.saveAll(Arrays.asList(sender, receiver));
+            TransactionEntity savedTrans = transactionRepository.save(transactionEntity);
 
             response.setResult(savedTrans.getId());
+            LOG.debug("Transaction from {} to {} with amount {} has been done successfully", sender.getUsername(), receiver.getUsername(), trans.getAmount());
             return response;
         } catch (Exception e) {
+            LOG.error("Error occur while executing a transaction with input {}", trans, e);
             throw new RuntimeException(e);
         }
     }
@@ -112,6 +117,7 @@ public class TradingServiceImpl implements TradingService {
     public PageableResponse<TransactionDTO> getTransactionsByUser(String username, Pageable pageable) {
         Page<TransactionDTO> pageResult = transactionRepository.retrieveTransactionsByUser(username, pageable)
                 .map(DTOMapper::toTransactionDTO);
+//        Page<TransactionDTO> pageResult = transactionRepository.findAll(pageable).map(DTOMapper::toTransactionDTO);
         PageableResponse<TransactionDTO> response = new PageableResponse<>();
         response.setNumberOfElements(pageResult.getNumberOfElements());
         response.setTotalElements(pageResult.getTotalElements());

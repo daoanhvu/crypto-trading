@@ -27,13 +27,13 @@ public class TradingController {
     @RequestMapping(path = "/prices/{symbol}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPriceBySymbol(@PathVariable("symbol") String symbol) {
         ApiResponse<PriceDTO> response = tradingService.retrieveBestPrice(symbol);
-        return new ResponseEntity<>(null, HttpStatus.valueOf(response.getHttpStatusCode()));
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
     }
 
     @RequestMapping(path = "/wallets/{username}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> retrieveWallet(@PathVariable("username") String username) {
         ApiResponse<WalletDTO> response = tradingService.retrieveWallet(username);
-        return new ResponseEntity<>(null, HttpStatus.valueOf(response.getHttpStatusCode()));
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
     }
 
     @RequestMapping(path = "/transactions", method = RequestMethod.POST,
@@ -45,7 +45,6 @@ public class TradingController {
     }
 
     @RequestMapping(path = "/transactions", method = RequestMethod.GET,
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTransactionsByUser(@RequestParam("username") String username, Pageable pageable) {
         PageableResponse<TransactionDTO> response = tradingService.getTransactionsByUser(username, pageable);

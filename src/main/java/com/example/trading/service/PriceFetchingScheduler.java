@@ -15,8 +15,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PriceFetchingScheduler {
+    private final Logger LOG = LoggerFactory.getLogger(PriceFetchingScheduler.class);
     private final PriceRepository priceRepository;
     private final String binanceUrl;
     private final String huobiUrl;
@@ -69,6 +77,7 @@ public class PriceFetchingScheduler {
                                     .map(DTOMapper::toPriceDTO).collect(Collectors.toList());
                         }
                     }
+                    LOG.warn("Requesting data from Binance returns code {}", binanceResponse.getStatusCode());
                     return Collections.emptyList();
                 });
 
@@ -85,6 +94,7 @@ public class PriceFetchingScheduler {
                                     .map(DTOMapper::toPriceDTO).collect(Collectors.toList());
                         }
                     }
+                    LOG.warn("Requesting data from Huobi returns code {}", huobiResponse.getStatusCode());
                     return Collections.emptyList();
                 });
 
@@ -93,9 +103,8 @@ public class PriceFetchingScheduler {
 
                 List<PriceDTO> bestPrices = aggregatePrices(binanceList, huobiList);
                 priceRepository.saveAllAndFlush(bestPrices.stream().map(DTOMapper::toPriceDTO).collect(Collectors.toList()));
-
             } catch(Exception ex) {
-                ex.printStackTrace();
+                LOG.error("Error occur while fetching prices", ex);
             } finally {
                 fetchingInProgress.set(false);
             }

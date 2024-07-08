@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long>, JpaSpecificationExecutor<TransactionEntity> {
-    @Query(value = "from TransactionEntity t where (t.fromUser = :username) or (t.toUser = :username) order by t.transactionTime desc")
+    @Query(value = "select t from TransactionEntity t where (t.fromUser = :username) or (t.toUser = :username) order by t.transactionTime desc")
     Page<TransactionEntity> retrieveTransactionsByUser(@Param("username") String username, Pageable pageable);
 }
