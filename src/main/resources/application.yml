@@ -15,3 +15,7 @@ priceFetching:
   timeRateInMs: 10000
   binanceUrl: "https://api.binance.com/api/v3/ticker/bookTicker"
   huobiUrl: "https://api.huobi.pro/market/tickers"
+
+
+logging:
+  file.name: 'D:\\logs\\crypto-trading\\crypto_trading.log'
