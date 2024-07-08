@@ -117,7 +117,6 @@ public class TradingServiceImpl implements TradingService {
     public PageableResponse<TransactionDTO> getTransactionsByUser(String username, Pageable pageable) {
         Page<TransactionDTO> pageResult = transactionRepository.retrieveTransactionsByUser(username, pageable)
                 .map(DTOMapper::toTransactionDTO);
-//        Page<TransactionDTO> pageResult = transactionRepository.findAll(pageable).map(DTOMapper::toTransactionDTO);
         PageableResponse<TransactionDTO> response = new PageableResponse<>();
         response.setNumberOfElements(pageResult.getNumberOfElements());
         response.setTotalElements(pageResult.getTotalElements());
